@@ -7,7 +7,16 @@ sub init()
     m.top.functionName = "PlayContentWithAds"   ' Function to run by task
     m.top.id = "PlayerTask"
 
-    
+    ' Initialize Segment Analytics
+    config = GetSegmentConfig()
+
+    if config = invalid
+        print "Error: segmentConfig not found in global node."
+        return
+    end if
+
+    ' Initialize SegmentAnalytics with config
+    m.segmentAnalytics = SegmentAnalytics(config)
     ' Removed m.segmentAnalytics.init(config) to prevent the error
 end sub
 
@@ -73,11 +82,35 @@ sub PlayContentWithAds()
                 smartBookmarks.UpdateSmartBookmarkForSeries(content.id, item.id)
             end if
 
-            '
+            ' Make track call indicating video playback started
+            eventName = "Video Playback Started"
+            properties = {
+                "title": item.title
+                "contentId": item.id
+                "mediaType": item.mediaType
+                "position": csasStream.position
+            }
+            options = {
+                "userId": uniqueId
+            }
+            m.segmentAnalytics.track(eventName, properties, options)
+
             ' Render the stitched stream
             keepPlay = RAF.renderStitchedStream(csasStream, parentNode)
 
-
+            ' Make track call indicating video playback completed
+            eventName = "Video Playback Completed"
+            properties = {
+                "title": item.title
+                "contentId": item.id
+                "mediaType": item.mediaType
+                "position": csasStream.position
+            }
+            options = {
+                "userId": uniqueId
+            }
+            m.segmentAnalytics.track(eventName, properties, options)
+            
             if keepPlay = false
                 bookmarks.UpdateBookmarkForVideo(item, csasStream.position)
             else

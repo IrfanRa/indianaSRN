@@ -18,6 +18,12 @@ sub Init()
     m.global.AddField("channelStore", "node", false)
     m.global.channelStore = CreateObject("roSGNode", "ChannelStore")
 
+    ' Initialize Segment Analytics
+    task = m.top.FindNode("segmentAnalyticsTask")
+    m.library = SegmentAnalyticsConnector(task)
+
+    config = GetSegmentConfig()
+    m.library.init(config)
 
     ' Play the splash video before showing the main content
     playSplashVideo()

@@ -6,7 +6,8 @@
         <field id="inputArgs" type="assocarray" onChange="OnInputDeepLinking" />
         <field id="launchArgs" type="assocarray" />
     </interface>
-
+    <script type="text/brightscript" uri="pkg:/source/Config.brs" />
+    <script type="text/brightscript" uri="pkg:/source/SegmentAnalytics.brs" />
     <script type="text/brightscript" uri="pkg:/components/MainScene.brs" />
     <script type="text/brightscript" uri="pkg:/source/utils.brs" />
     <script type="text/brightscript" uri="UILogic/VideoPlayerLogic.brs" />
@@ -19,6 +20,7 @@
     <script type="text/brightscript" uri="UILogic/DeepLinkingLogic.brs" />
     <script type="text/brightscript" uri="UILogic/BookmarksLogic.brs" />
     <script type="text/brightscript" uri="UILogic/SmartBookmarksLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/SegmentAnalyticsConnector.brs" />
     
     
     <children>
@@ -54,5 +56,6 @@
         />
 
         <Node id="globalNode" />
+        <SegmentAnalyticsTask id="segmentAnalyticsTask" />
     </children>
 </component>

@@ -32,6 +32,7 @@ function GenerateSignature(method as String, endpoint as String, params as Objec
         else
             val = val.ToStr()
         end if
+
         str = str + key + "=" + val
     end for
     digest = CreateObject("roEVPDigest")

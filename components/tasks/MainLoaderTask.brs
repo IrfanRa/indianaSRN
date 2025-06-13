@@ -8,51 +8,79 @@ sub Init()
 end sub
 
 sub GetContent()
-    ' request the content feed from the API
+    rootChildren = []
     xfer = CreateObject("roURLTransfer")
     xfer.SetCertificatesFile("common:/certs/ca-bundle.crt")
-    xfer.SetURL("https://otttelemaerica.com/feed/indianaSRN.json")
-    rsp = xfer.GetToString()
-    rootChildren = []
-    rows = {}
+    xfer.SetURL("https://apps.blueframetech.com/api/v1/bft/indianasrn/config.json")
+    configRsp = xfer.GetToString()
+    configJson = ParseJson(configRsp)
+    if configJson = invalid return
 
-    ' parse the feed and build a tree of ContentNodes to populate the GridView
-    json = ParseJson(rsp)
-    if json <> invalid
-        homeRowIndex = 0
-        for each category in json
-            value = json.Lookup(category)
-            if Type(value) = "roArray" ' if parsed key value having other objects in it
-                row = {}
-                row.title = category
-                row.children = []
-                homeItemIndex = 0
-                for each item in value ' parse videos and push them to row
-                    seasons = GetSeasonData(item.seasons, homeRowIndex, homeItemIndex, item.id)
-                    itemData = GetItemData(item)
-                    itemData.homeRowIndex = homeRowIndex
-                    itemData.homeItemIndex = homeItemIndex
-                    itemData.mediaType = category
-                    if seasons <> invalid and seasons.Count() > 0
-                        itemData.children = seasons
-                    end if
+    siteIds = configJson.vCloud.siteIds
+    layoutRows = configJson.layout.rows
+    rowIndex = 0
+    for each r in layoutRows
+        if r.type = "broadcast"
+            row = {}
+            row.title = r.title
+            row.children = []
+            params = {
+                site_id: siteIds[0],
+                sort_by: r.broadcastSearchParams.sortBy,
+                sort_dir: r.broadcastSearchParams.sortDir,
+                viewer_status: r.broadcastSearchParams.viewerStatus
+            }
+            url = BuildSignedUrl(configJson.vCloud.domain, "api/client/broadcast", params, "OmeM0oQjSP2p8XCQZFfCAEstODF5mWZh", "ZXy58xgBecG{sV<~(yV<1N{?Ne#4Hqt?")
+            xfer2 = CreateObject("roURLTransfer")
+            xfer2.SetCertificatesFile("common:/certs/ca-bundle.crt")
+            xfer2.SetURL(url)
+            rsp = xfer2.GetToString()
+            data = ParseJson(rsp)
+            if data <> invalid and data.broadcasts <> invalid
+                itemIndex = 0
+                for each b in data.broadcasts
+                    itemData = GetBroadcastItemData(b)
+                    itemData.homeRowIndex = rowIndex
+                    itemData.homeItemIndex = itemIndex
                     row.children.Push(itemData)
-                    homeItemIndex++
+                    itemIndex++
                 end for
-                rootChildren.Push(row)
-                homeRowIndex++
             end if
-        end for
-        ' set up a root ContentNode to represent rowList on the GridScreen
-        contentNode = CreateObject("roSGNode", "ContentNode")
-        contentNode.Update({
-            children: rootChildren
-        }, true)
-        ' populate content field with root content node.
-        ' Observer(see OnMainContentLoaded in MainScene.brs) is invoked at that moment
-        m.top.content = contentNode
-    end if
+            rootChildren.Push(row)
+            rowIndex++
+        end if
+    end for
+
+    contentNode = CreateObject("roSGNode", "ContentNode")
+    contentNode.Update({children: rootChildren}, true)
+    m.top.content = contentNode
 end sub
+
+function GetBroadcastItemData(b as object) as object
+    item = {}
+    item.title = b.title
+    item.description = b.description
+    item.hdPosterURL = b.large_image
+    item.id = b.id
+    item.releaseDate = b.date
+    item.categories = [b.section_title]
+    item.url = ExtractUrlFromEmbed(b.embed_code)
+    item.streamFormat = "hls"
+    return item
+end function
+
+function ExtractUrlFromEmbed(embed as String) as String
+    if embed = invalid return ""
+    start = Instr(embed, "src=")
+    if start <= 0 return ""
+    quote = Mid(embed, start+5, 1)
+    rest = Mid(embed, start+6)
+    finish = Instr(rest, quote)
+    if finish > 0
+        return Left(rest, finish-1)
+    end if
+    return ""
+end function
 
 function GetItemData(video as object) as object
     item = {}

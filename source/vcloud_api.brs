@@ -27,6 +27,12 @@ function GenerateSignature(method as String, endpoint as String, params as Objec
         if Type(val) = "roArray" then
             val = val.join(",")
         end if
+        if val = invalid then
+            val = ""
+        else
+            val = val.ToStr()
+        end if
+
         str = str + key + "=" + val
     end for
     digest = CreateObject("roEVPDigest")

@@ -1,55 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--********** Copyright 2020 Roku Corp.  All Rights Reserved. **********-->
+<!--********** Copyright 2020 Roku Corp.  All Rights
+Reserved. **********-->
 
-<component name="GridScreen" extends="Group"  initialFocus="RowList">
+<component name="GridScreen" extends="Group" initialFocus="RowList">
     <script type="text/brightscript" uri="GridScreen.brs" />
     <script type="text/brightscript" uri="pkg:/source/utils.brs" />
-	<interface>
+    <interface>
         <!-- Specifies the content for the Grid -->
         <field id="content" type="node" alias="RowList.content" />
-        <field id="rowItemSelected" type="intarray" alwaysnotify="true" alias="RowList.rowItemSelected" />
+        <field id="rowItemSelected" type="intarray" alwaysnotify="true"
+            alias="RowList.rowItemSelected" />
         <field id="jumpToRowItem" type="intarray" alias="RowList.jumpToRowItem" />
     </interface>
     <children>
+        <!-- large thumbnail preview (top-right) -->
         <Poster
-            id="backgroundImage"
-            width="1280"
-            height="720"
-            loadWidth="1280"
-            loadHeight="720"
-            uri=""
+            id="previewPoster"
+            translation="[900,70]"
+            width="360"
+            height="202"
+            loadWidth="360"
+            loadHeight="202"
             loadDisplayMode="scaleToFit"
-            translation="[0,0]"
+            visible="false"
         />
-        <!-- Shade overlay -->
-        <Rectangle
-            id="shadeOverlay"
-            width="1280"
-            height="720"
-            color="0x0000007F"  
-            translation="[0,0]"
-        />
-         <!-- Label with title and length of content -->
-         <Label
-	        id="titleLabel"
-	        width="800"
-			translation="[90,110]"
-            font="font:ExtraLargeBoldSystemFont"
-	    />
-        <!-- Label with description of content.
-	         wrap="true" and numLines="3" means that the text can be broken into three lines -->
+        <!-- Bottom‑right stack containing title, description and carousel -->
+        <LayoutGroup
+            id="bottomRightGroup"
+            translation="[1150,260]"
+            layoutDirection="vert"
+            itemSpacings="[12]"
+            horizAlignment="right">
+        <!-- Label with title and length of content -->
         <Label
-	        id="descriptionLabel"
-	        wrap="true"
-	        width="900"
-	        numLines="2"
-			font = "font:MediumBoldSystemFont" 
-            translation="[100,170]"
-	    />
+            id="titleLabel"
+            width="1080"
+            translation="[80,200]"
+            font="font:MediumBoldSystemFont"
+        />
+        <!-- Label with description of content.
+	    wrap="true" and numLines="3" means that the text can be broken into three lines -->
+        <Label
+            id="descriptionLabel"
+            wrap="true"
+            width="1080"
+            numLines="2"
+            translation="[80,240]"
+        />
         <RowList
             itemComponentName="RowListItemComponent"
             id="rowList"
-            translation="[60,240]"
+            translation="[80,350]"
             numRows="3"
             rowitemSize="[[320,180]]"
             rowItemSpacing="[[20,0]]"
@@ -59,5 +60,6 @@
             showRowLabel="[true]"
             rowFocusAnimationStyle="floatingfocus"
         />
+        </LayoutGroup>
     </children>
 </component>

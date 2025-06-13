@@ -27,7 +27,7 @@ function playSplashVideo() as Void
     videoPlayer = CreateObject("roSGNode", "Video")
     videoContent = CreateObject("roSGNode", "ContentNode")
 
-    videoContent.url = "pkg:/images/splash.mp4" ' Path to your splash video
+    videoContent.url = "pkg:/images/splash1.mp4" ' Path to your splash video
     videoContent.streamFormat = "mp4"
 
     videoPlayer.content = videoContent

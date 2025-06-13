@@ -11,7 +11,7 @@ sub GetContent()
     ' request the content feed from the API
     xfer = CreateObject("roURLTransfer")
     xfer.SetCertificatesFile("common:/certs/ca-bundle.crt")
-    xfer.SetURL("https://otttelemaerica.com/feed/ZodicTarot.json")
+    xfer.SetURL("https://otttelemaerica.com/feed/indianaSRN.json")
     rsp = xfer.GetToString()
     rootChildren = []
     rows = {}
